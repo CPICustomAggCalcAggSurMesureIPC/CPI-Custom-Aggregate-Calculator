@@ -73,7 +73,7 @@
       }
     },
     "Matrix": {
-      "Source": "artifactory1",
+      "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
       "description": {
         "Package": "Matrix",
@@ -103,14 +103,7 @@
         "Repository": "CRAN",
         "Date/Publication": "2026-03-21 14:40:03 UTC",
         "Built": "R 4.4.3; x86_64-w64-mingw32; 2026-03-27 19:26:28 UTC; windows",
-        "Archs": "x64",
-        "RemoteType": "standard",
-        "RemoteRef": "Matrix",
-        "RemotePkgRef": "Matrix",
-        "RemoteRepos": "https://cloud.r-project.org",
-        "RemoteReposName": "artifactory1",
-        "RemotePkgPlatform": "x86_64-w64-mingw32",
-        "RemoteSha": "1.7-5"
+        "Archs": "x64"
       }
     },
     "R6": {
@@ -454,6 +447,33 @@
         "Archs": "x64"
       }
     },
+    "cellranger": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "cellranger",
+        "Title": "Translate Spreadsheet Cell Ranges to Rows and Columns",
+        "Version": "1.1.0",
+        "Authors@R": "c(\n    person(\"Jennifer\", \"Bryan\", , \"jenny@stat.ubc.ca\", c(\"cre\", \"aut\")),\n    person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", \"ctb\")\n  )",
+        "Description": "Helper functions to work with spreadsheets and the \"A1:D10\" style\n    of cell range specification.",
+        "Depends": "R (>= 3.0.0)",
+        "License": "MIT + file LICENSE",
+        "LazyData": "true",
+        "URL": "https://github.com/rsheets/cellranger",
+        "BugReports": "https://github.com/rsheets/cellranger/issues",
+        "Suggests": "covr, testthat (>= 1.0.0), knitr, rmarkdown",
+        "RoxygenNote": "5.0.1.9000",
+        "VignetteBuilder": "knitr",
+        "Imports": "rematch, tibble",
+        "NeedsCompilation": "no",
+        "Packaged": "2016-07-26 06:50:00 UTC; jenny",
+        "Author": "Jennifer Bryan [cre, aut],\n  Hadley Wickham [ctb]",
+        "Maintainer": "Jennifer Bryan <jenny@stat.ubc.ca>",
+        "Repository": "CRAN",
+        "Date/Publication": "2016-07-27 03:17:48",
+        "Built": "R 4.4.1; ; 2024-06-30 02:21:50 UTC; windows"
+      }
+    },
     "chron": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -763,7 +783,7 @@
       }
     },
     "dplyr": {
-      "Source": "artifactory1",
+      "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
       "description": {
         "Type": "Package",
@@ -796,7 +816,7 @@
         "RemoteRef": "dplyr",
         "RemotePkgRef": "dplyr",
         "RemoteRepos": "https://cloud.r-project.org",
-        "RemoteReposName": "artifactory",
+        "RemoteReposName": "CRAN",
         "RemotePkgPlatform": "x86_64-w64-mingw32",
         "RemoteSha": "1.1.4"
       }
@@ -2101,6 +2121,61 @@
         "Archs": "x64"
       }
     },
+    "readxl": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "readxl",
+        "Title": "Read Excel Files",
+        "Version": "1.4.3",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Posit, PBC\", role = c(\"cph\", \"fnd\"),\n           comment = \"Copyright holder of all R code and all C/C++ code without explicit copyright attribution\"),\n    person(\"Marcin\", \"Kalicinski\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included RapidXML code\"),\n    person(\"Komarov Valery\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Christophe Leitienne\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Bob Colbert\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"David Hoerl\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\"),\n    person(\"Evan Miller\", role = c(\"ctb\", \"cph\"),\n           comment = \"Author of included libxls code\")\n  )",
+        "Description": "Import excel files into R. Supports '.xls' via the embedded\n    'libxls' C library <https://github.com/libxls/libxls> and '.xlsx' via\n    the embedded 'RapidXML' C++ library <https://rapidxml.sourceforge.net/>.\n    Works on Windows, Mac and Linux without external dependencies.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://readxl.tidyverse.org, https://github.com/tidyverse/readxl",
+        "BugReports": "https://github.com/tidyverse/readxl/issues",
+        "Depends": "R (>= 3.6)",
+        "Imports": "cellranger, tibble (>= 2.0.1), utils",
+        "Suggests": "covr, knitr, rmarkdown, testthat (>= 3.1.6), withr",
+        "LinkingTo": "cpp11 (>= 0.4.0), progress",
+        "VignetteBuilder": "knitr",
+        "Config/Needs/website": "tidyverse/tidytemplate, tidyverse",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "Note": "libxls v1.6.2 (patched) 45abe77",
+        "RoxygenNote": "7.2.3",
+        "NeedsCompilation": "yes",
+        "Packaged": "2023-07-05 19:59:43 UTC; jenny",
+        "Author": "Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>),\n  Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>),\n  Posit, PBC [cph, fnd] (Copyright holder of all R code and all C/C++\n    code without explicit copyright attribution),\n  Marcin Kalicinski [ctb, cph] (Author of included RapidXML code),\n  Komarov Valery [ctb, cph] (Author of included libxls code),\n  Christophe Leitienne [ctb, cph] (Author of included libxls code),\n  Bob Colbert [ctb, cph] (Author of included libxls code),\n  David Hoerl [ctb, cph] (Author of included libxls code),\n  Evan Miller [ctb, cph] (Author of included libxls code)",
+        "Maintainer": "Jennifer Bryan <jenny@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-07-06 22:00:09 UTC",
+        "Built": "R 4.4.1; x86_64-w64-mingw32; 2024-06-30 02:40:11 UTC; windows",
+        "Archs": "x64"
+      }
+    },
+    "rematch": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "rematch",
+        "Title": "Match Regular Expressions with a Nicer 'API'",
+        "Version": "2.0.0",
+        "Author": "Gabor Csardi",
+        "Maintainer": "Gabor Csardi <csardi.gabor@gmail.com>",
+        "Description": "A small wrapper on 'regexpr' to extract the matches and\n    captured groups from the match of a regular expression to a character\n    vector.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/gaborcsardi/rematch",
+        "BugReports": "https://github.com/gaborcsardi/rematch/issues",
+        "RoxygenNote": "5.0.1.9000",
+        "Suggests": "covr, testthat",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2023-08-30 12:10:51 UTC; gaborcsardi",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-08-30 16:50:02 UTC",
+        "Built": "R 4.4.1; ; 2024-06-30 00:46:32 UTC; windows"
+      }
+    },
     "rlang": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -2853,14 +2928,14 @@
     }
   },
   "files": {
-    "App.R": {
-      "checksum": "d07224451f700213fbcea8b8d939535d"
+    "app.R": {
+      "checksum": "d63bbcde31ad0fc889782e49330de055"
+    },
+    "data-raw/Data_for_R_Shiny.xlsx": {
+      "checksum": "8c17e7b599c40a8e60ad958aeac75140"
     },
     "Functions.R": {
-      "checksum": "7763f9c3f0a80d02bcce729ea341e446"
-    },
-    "sysdata.rda": {
-      "checksum": "be9d02cfa44943d83115f12919ddbe38"
+      "checksum": "01d628bf1d12aace05f9af647d32df59"
     }
   },
   "users": null
