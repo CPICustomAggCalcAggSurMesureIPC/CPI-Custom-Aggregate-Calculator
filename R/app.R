@@ -1,4 +1,5 @@
 
+
 #---------------------------------
 # 0 Load libraries and clear environment
 
@@ -1464,17 +1465,6 @@ dfPopularAggComp <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.x
 	 select(aggregate_id, where_to_code, i_dim2_position)
 
 
-# get CODR weights
-#dfCODRWeightAll <- data.frame(table_18100007_vector = 1234, weight_reference_period = "2026-01-01", weight_r = 23.4, weight_version = "original")
-dfCODRWeightAll <<- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100007-eng.zip", file = 1), show_col_types = FALSE)) |>
- 	select(table_18100007_vector   = VECTOR,
-         weight_reference_period = REF_DATE,
-         weight_r                = VALUE) |>
-  mutate(table_18100007_vector   = as.integer(substr(table_18100007_vector, 2, nchar(table_18100007_vector))),
-         weight_reference_period = paste0(weight_reference_period, "-01-01"),
-  			    weight_version          = ifelse(weight_reference_period == "2001-01-01", "revised", "original"))
-
-
 # set graph colours and linetypes
 dfSeriesFormats <- data.frame(num       = 1:12,
 															colour    = c("#0000FF", "#000000", "#000099", "#CC0000", "#9900FF", "#990000", "#0066CC", "#990099", "#003366", "#660033", "#006600", "#CC00CC"),
@@ -1525,64 +1515,20 @@ dfMessages <- rbind(dfMessages,
 #dfMessages <- dfMessages |> mutate(show_message = "n")
 
 
-# Set index ref period ranges and get index data
-# set index reference period start
-iFirstIndexYear      <- 2004
-iFirstIndexPeriod    <- 07
-cFirstIndexYearMonth <- paste0(as.character(iFirstIndexYear), substr(as.character(100 + iFirstIndexPeriod), 2, 3))
-
-
-# get index data from ZIP
-#dfCODRIndexAll <- data.frame(table_18100004_vector = 1234, reference_period = "2025-01-01", index_r = 123.4)
-dfCODRIndexAll <- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100004-eng.zip", file = 1), show_col_types = FALSE)) |>
-  filter(REF_DATE >= cFirstIndexYearMonth) |>
-  select(table_18100004_vector = VECTOR,
-         reference_period      = REF_DATE,
-         index_r               = VALUE) |>
-  mutate(table_18100004_vector = as.integer(substr(table_18100004_vector, 2, nchar(table_18100004_vector))),
-         reference_period = paste0(reference_period, "-01"))
-
-
-# derive index reference period end
-iLastIndexYear           <- as.integer(substr(as.character(max(dfCODRIndexAll$reference_period)), 1, 4))
-iLastIndexPeriod         <- as.integer(substr(as.character(max(dfCODRIndexAll$reference_period)), 6, 7))
-cLastIndexRefPeriod      <<- paste0(as.character(iLastIndexYear),  "-", substr(as.character(iLastIndexPeriod  + 100), 2, 3), "-01")
-cFirstIndexDisplayPeriod <<- "2007-04-01"
-
-
-# Set default base periods
+# Global constants
+iFirstIndexYear             <- 2004
+iFirstIndexPeriod           <- 07
+cFirstIndexYearMonth        <- paste0(as.character(iFirstIndexYear), substr(as.character(100 + iFirstIndexPeriod), 2, 3))
+cFirstIndexDisplayPeriod    <<- "2007-04-01"
 cDefaultStartBasePeriod     <<- "2007-04-01"
 cDefaultEndBasePeriod       <<- "2007-04-01"
 cDefaultBasePeriod          <<- "200704=100"
-
-
-# Set weight ref period ranges and get weight data
 cFirstWeightRefPeriod       <<- "2001-01-01"
 cFirstWeightEffectivePeriod <<- "2004-07-01"
 cFirstWeightUsablePeriod    <<- "2007-05-01"
 cMaxWeightRefPeriod         <<- max(dfBasket$weight_reference_period)
+iDefaultMaxSeriesCount      <<- 8 # default number of series to plot
 
-
-
-# Create vector and dataframe of all ref periods
-vRefPeriod <- vector('character')
-i <- 0
-for (y in iFirstIndexYear:iLastIndexYear){
-  for (m in 1:12){
-  	 if ( ((y * 100 + m) >= (iFirstIndexYear * 100 + iFirstIndexPeriod)) & ((y * 100 + m) <= (iLastIndexYear * 100 + iLastIndexPeriod)) ) {
-  	   i  <- i + 1
-      vRefPeriod[i] <- paste0(as.character(y), "-", substr(as.character(m + 100), 2, 3), "-01")
-  	 }
-  }
-}
-dfRefPeriods <- data.frame(vRefPeriod) |>
-  rename("reference_period" = vRefPeriod)
-
-
-# Set default number of series to plot
-iDefaultMaxSeriesCount <<- 8
-
-rm(i, y, m, iFirstIndexYear, iFirstIndexPeriod, iLastIndexYear, iLastIndexPeriod)
 
 
 
@@ -1781,6 +1727,7 @@ shinydashboard::dashboardBody(
     }, 400);
     });
   ")),
+#   		      shiny::column(12, h3(fGetEnFrText("CustAggGroupStepText"), align = "left"))),
 
   shiny::mainPanel(width = '100%',
     shiny::fluidRow(h1(fGetEnFrText("TitleText"))),
@@ -1797,7 +1744,7 @@ shinydashboard::dashboardBody(
 		                                 span(style="margin-top: 0.5em; color: #26374a;", class="glyphicon glyphicon-info-sign", `aria-hidden`="true") )) }) ))),
 		      shiny::fluidRow(shiny::column(12, div(style = "height: 10px;"))),
 		      shiny::fluidRow(
-   		      shiny::column(12, shiny::radioButtons(inputId = "inRadioCustAggSeries", label = div(fGetEnFrText("CustAggRadioButtonLabel"),  style = "font-weight: bold;"),
+   		      shiny::column(12, shiny::radioButtons(inputId = "inRadioCustAggSeries", label = h3(fGetEnFrText("CustAggRadioButtonLabel")),
    					    										  choiceNames = list(fGetEnFrText("CustAggSeriesSum"), fGetEnFrText("CustAggSeriesCdaAllExSel"), fGetEnFrText("CustAggSeriesBothSel")),
    					    										  choiceValues = list(1, 2, 3), selected = 1, inline = FALSE, width = "100%"))))), #left r1 aggregate series selections
         shiny::fluidRow(shiny::column(12, div(style = "height: 20px;"))),
@@ -1937,9 +1884,8 @@ server <- function(input, output, session) {
   rvLastRunSel          <- shiny::reactiveValues(comp_id = NULL, sel_geo = NULL, sel_prod = NULL)
   rvLastRunBasePeriod   <- shiny::reactiveValues(base_start = NULL, base_end = NULL)
   rvLastRunQueryResult  <- shiny::reactiveValues(query_result = NULL)
-  rvTermsAccepted       <- shiny::reactiveValues(terms_accepted = FALSE)
   rvCandidatePlotSeries <- shiny::reactiveValues(series = NULL)
-
+  rvCODRData            <- shiny::reactiveValues(dfCODRIndexAll = NULL, dfCODRWeightAll = NULL, vRefPeriod = NULL, dfRefPeriods = NULL)
 
  	# tooltips
   # Setting tab ID used in JS script "modal-focus-start"
@@ -1971,11 +1917,68 @@ server <- function(input, output, session) {
 	 observeEvent(input$inBtnCloseToolTip1mSameGeoCont,  {removeModal()})
 
 
- 	# Warn user if weight metadata is out-of-date
-  if (max(dfCODRWeightAll$weight_reference_period) > cMaxWeightRefPeriod) {
-  	 shiny::showModal(modalDialog(title = HTML(fGetEnFrText("UpdateNeededTitleText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("UpdateNeededText")),  easyClose = FALSE, footer = modalButton(fGetEnFrText("ToolTipMessageButtonCloseLabel"))) )
-  }
+  # At first launch, ask user to accept Terms of Use before load
+  shiny::showModal(modalDialog(title = HTML(fGetEnFrText("TermsOfUseHeaderText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("TermsOfUseText")),  easyClose = FALSE, footer = tagList(actionButton("modalBtnAcceptTermsForGetData", fGetEnFrText("TermsOfUseButtonAcceptLabel"))) ) ) 
+  
+  
+  # Once terms of use accepted, get data
+  shiny::observeEvent(input$modalBtnAcceptTermsForGetData, {
+    shiny::removeModal()
+    waiter::waiter_show(html = waiter::spin_fading_circles())
 
+    # get index data from ZIP
+#    dfCODRIndexAll <- data.frame(table_18100004_vector = 1234, reference_period = "2025-01-01", index_r = 123.4)
+    dfCODRIndexAll <- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100004-eng.zip", file = 1), show_col_types = FALSE)) |>
+      filter(REF_DATE >= cFirstIndexYearMonth) |>
+      select(table_18100004_vector = VECTOR,
+             reference_period      = REF_DATE,
+             index_r               = VALUE) |>
+      mutate(table_18100004_vector = as.integer(substr(table_18100004_vector, 2, nchar(table_18100004_vector))),
+             reference_period = paste0(reference_period, "-01"))
+
+    # get CODR weights
+#    dfCODRWeightAll <- data.frame(table_18100007_vector = 1234, weight_reference_period = "2026-01-01", weight_r = 23.4, weight_version = "original")
+    dfCODRWeightAll <<- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100007-eng.zip", file = 1), show_col_types = FALSE)) |>
+     	select(table_18100007_vector   = VECTOR,
+             weight_reference_period = REF_DATE,
+             weight_r                = VALUE) |>
+      mutate(table_18100007_vector   = as.integer(substr(table_18100007_vector, 2, nchar(table_18100007_vector))),
+             weight_reference_period = paste0(weight_reference_period, "-01-01"),
+      			    weight_version          = ifelse(weight_reference_period == "2001-01-01", "revised", "original"))
+
+    # Create vector and dataframe of all ref periods
+    iLastIndexYear           <- as.integer(substr(as.character(max(dfCODRIndexAll$reference_period)), 1, 4))
+    iLastIndexPeriod         <- as.integer(substr(as.character(max(dfCODRIndexAll$reference_period)), 6, 7))
+    vRefPeriod <- vector('character')
+    i <- 0
+    for (y in iFirstIndexYear:iLastIndexYear){
+      for (m in 1:12){
+  	     if ( ((y * 100 + m) >= (iFirstIndexYear * 100 + iFirstIndexPeriod)) & ((y * 100 + m) <= (iLastIndexYear * 100 + iLastIndexPeriod)) ) {
+  	       i  <- i + 1
+          vRefPeriod[i] <- paste0(as.character(y), "-", substr(as.character(m + 100), 2, 3), "-01")
+  	     }
+      }
+    }
+    dfRefPeriods <- data.frame(vRefPeriod) |>
+      rename("reference_period" = vRefPeriod)
+
+    # prepare list of all objects for future use    
+  		rvCODRData$dfCODRIndexAll  <- dfCODRIndexAll
+  		rvCODRData$dfCODRWeightAll <- dfCODRWeightAll
+  		rvCODRData$vRefPeriod      <- vRefPeriod
+  		rvCODRData$dfRefPeriods    <- dfRefPeriods
+  			
+    waiter::waiter_hide()
+    
+	   # Warn user if weight metadata is out-of-date
+    if (max(rvCODRData$dfCODRWeightAll$weight_reference_period) > cMaxWeightRefPeriod) {
+ 	    shiny::showModal(modalDialog(title = HTML(fGetEnFrText("UpdateNeededTitleText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("UpdateNeededText")),  easyClose = FALSE, footer = modalButton(fGetEnFrText("ToolTipMessageButtonCloseLabel"))) )
+    }
+  })
+  
+  
+
+  
 	 # create dynamic output whenever rvCompCount$n changes
 	 output$uiOutPanelComp <- renderUI({
     fMessage("renderUI", paste0("rvCompCount$n: ", rvCompCount$n, ", rvCompLastID$n: ", rvCompLastID$n, ", rvCompDispIDs$n: ", paste(rvCompDispIDs$n, collapse = ", "), ", length(rvSavedSel$sel_geo): ", length(rvSavedSel$sel_geo), ", ", paste0(paste(as.character(rvSavedSel$comp_id), rvSavedSel$sel_geo, rvSavedSel$sel_prod, sep = "/"), collapse = ", ")))
@@ -2375,7 +2378,7 @@ server <- function(input, output, session) {
   	  cStartBasePeriod        <- substr(max(min(dfSeriesSpagg[vSelectedCustAggRows, ]$i_first_ref_date), min(dfSeriesSpagg[vSelectedCustAggRows, ]$w_first_period), cDefaultStartBasePeriod), 1, 7)
  	    rvBasePeriod$base_start <- cStartBasePeriod
  	    rvBasePeriod$base_end   <- cStartBasePeriod
-  	  vRef                    <- substr(vRefPeriod, 1, 7)
+  	  vRef                    <- substr(rvCODRData$vRefPeriod, 1, 7)
   	  vRef                    <- sort(vRef[vRef >= cStartBasePeriod], decreasing = TRUE)
       shiny::updateSelectInput(session, "inBaseStartPeriod", choices = vRef, selected = cStartBasePeriod)
       shiny::updateSelectInput(session, "inBaseEndPeriod",   choices = vRef, selected = cStartBasePeriod)
@@ -2393,7 +2396,7 @@ server <- function(input, output, session) {
   	if (length(input$inBaseStartPeriod) > 0 & length(rvBasePeriod$base_start) > 0 && (!is.na(input$inBaseStartPeriod) & !is.na(rvBasePeriod$base_start))) {
   		if (input$inBaseStartPeriod != rvBasePeriod$base_start) {
   	    rvBasePeriod$base_start <- input$inBaseStartPeriod
-  	    vRef                    <- substr(vRefPeriod, 1, 7)
+  	    vRef                    <- substr(rvCODRData$vRefPeriod, 1, 7)
    	    vRef                    <- sort(vRef[vRef >= input$inBaseStartPeriod], decreasing = TRUE)
  	      if (input$inBaseEndPeriod < input$inBaseStartPeriod) {
  	    	  rvBasePeriod$base_end <- rvBasePeriod$base_start
@@ -2415,27 +2418,12 @@ server <- function(input, output, session) {
   	  }
   	}
   })
-
-
-  # Ask user to accept Terms of Use before Run. If Refuse -> no action, if Accept -> Click Run
-  shiny::observeEvent(input$modalBtnAcceptTermsForRun, {
-    shiny::removeModal()
-   	rvTermsAccepted$terms_accepted <- TRUE
-    shinyjs::click("inBtnRun")
-    shinyjs::show(id = "inRadioRebase")
-    shinyjs::show(id = "inCheckBoxDisplaySeries")
-  })
-
+  
 
   # on Run button click, create Query Result list that can be reused throughout server function
   lQueryResult <- shiny::eventReactive(input$inBtnRun, {
     fMessage("Run before", paste0("rvCompCount$n: ", rvCompCount$n, ", rvCompLastID$n: ", rvCompLastID$n, ", rvCompDispIDs$n: ", paste(rvCompDispIDs$n, collapse = ", "), ", length(rvSavedSel$sel_geo): ", length(rvSavedSel$sel_geo), ", ", paste0(paste(as.character(rvSavedSel$comp_id), rvSavedSel$sel_geo, rvSavedSel$sel_prod, sep = "/"), collapse = ", ")))
 
-    if (rvTermsAccepted$terms_accepted == FALSE) {
-      #     shiny::showModal(modalDialog(title = HTML(fGetEnFrText("Statistic1mSameGeoContToolTipTitleText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("Statistic1mSameGeoContToolTipText")),  easyClose = FALSE, footer = tagList(actionButton("inBtnCloseToolTip1mSameGeoCont",  fGetEnFrText("ToolTipMessageButtonCloseLabel"))) ) ) )
-      #    	shiny::showModal(modalDialog(h3(fGetEnFrText("TermsOfUseHeaderText")), br(), HTML(fGetEnFrText("TermsOfUseText")), footer = tagList(actionButton("modalBtnAcceptTermsForRun", fGetEnFrText("TermsOfUseButtonAcceptLabel")), modalButton(fGetEnFrText("TermsOfUseButtonRefuseLabel")) ) ) )
-        shiny::showModal(modalDialog(title = HTML(fGetEnFrText("TermsOfUseHeaderText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("TermsOfUseText")),  easyClose = FALSE, footer = tagList(actionButton("modalBtnAcceptTermsForRun", fGetEnFrText("TermsOfUseButtonAcceptLabel")), modalButton(fGetEnFrText("TermsOfUseButtonRefuseLabel")) ) ) )
-    } else { # rvTermsAccepted$terms_accepted == TRUE
     	waiter::waiter_show(html = waiter::spin_fading_circles())
 
     	iN       <- rvCompCount$n
@@ -2483,7 +2471,7 @@ server <- function(input, output, session) {
     	} else { # new components
     		###### CALL MAIN FUNCTION #####
 #    		lQueryResult <- lZQueryResult
-    		lQueryResult <- fIndexWeightChgCont(dfBasket, dfSeriesReg, dfSeriesSpagg, dfCODRIndexAll, dfCODRWeightAll, dfRefPeriods, vSelectedCustAggRows, rvBasePeriod$base_start, rvBasePeriod$base_end)
+    		lQueryResult <- fIndexWeightChgCont(dfBasket, dfSeriesReg, dfSeriesSpagg, rvCODRData$dfCODRIndexAll, rvCODRData$dfCODRWeightAll, rvCODRData$dfRefPeriods, vSelectedCustAggRows, rvBasePeriod$base_start, rvBasePeriod$base_end)
 
     		# update rvLastRun...
     		rvLastRunSel$sel_geo              <- dfSelSeriesSpagg$sel_geo
@@ -2536,11 +2524,13 @@ server <- function(input, output, session) {
     	}
 
      fMessage("Run after", paste0("rvCompCount$n: ", rvCompCount$n, ", rvCompLastID$n: ", rvCompLastID$n, ", rvCompDispIDs$n: ", paste(rvCompDispIDs$n, collapse = ", "), ", length(rvSavedSel$sel_geo): ", length(rvSavedSel$sel_geo), ", ", paste0(paste(as.character(rvSavedSel$comp_id), rvSavedSel$sel_geo, rvSavedSel$sel_prod, sep = "/"), collapse = ", ")))
+     
+     shinyjs::show(id = "inRadioRebase")
+     shinyjs::show(id = "inCheckBoxDisplaySeries")
+     
     	waiter::waiter_hide()
 
     	return(lQueryResult)
-    } #rvTermsAccepted$terms_accepted == TRUE
-
   })
 
 
