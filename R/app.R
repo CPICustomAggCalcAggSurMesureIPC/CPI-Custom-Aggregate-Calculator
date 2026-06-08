@@ -9,7 +9,7 @@ load(file = "sysdata.rda")
 source("Functions.R")
 
 
-cAppLanguage <- "English"
+cAppLanguage <<- "English"
 
 
 # get series
