@@ -2,18 +2,26 @@ library("shiny")
 library("dplyr")
 library("tidyr")
 
-
-# Update and create global objects
-# Set global language
-load(file = "sysdata.rda")
-source("Functions.R")
+rm(list=ls())
 
 
-cAppLanguage <<- "English"
+cAppLanguage    <<- "English"
+
+# get English and French text
+dfTextEnFr <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="En & Fr text"))
+
+
+# get basket periods
+dfBasket   <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="basket")) |>
+	 mutate(basket_ref_date         = weight_reference_period,
+	        weight_reference_period = paste0(as.character(weight_reference_period),"-01-01"),
+         link_period             = as.character(link_period),
+         first_period            = as.character(first_period),
+         last_period             = as.character(last_period) )
 
 
 # get series
-dfSeriesReg <- dfSeriesReg |>
+dfSeriesReg <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="map vectors across tables")) |>
   mutate(table_18100004_vector         = as.integer(substr(i_vector,              2, nchar(i_vector))),
          table_18100007_samegeo_vector = as.integer(substr(w_link_samegeo_vector, 2, nchar(w_link_samegeo_vector))),
          table_18100007_Canada_vector  = as.integer(substr(w_link_Canada_vector,  2, nchar(w_link_Canada_vector))),
@@ -52,8 +60,9 @@ dfSeriesSpagg <- dfSeriesReg |>
 
 
 # get popular aggregates
-dfPopularAggDefn <- dfPopularAggDefn |>
-  mutate(language        = cAppLanguage,
+dfPopularAggDefn <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="popular aggregate defn")) |>
+	 filter(display == "y") |>
+  mutate(language            = cAppLanguage,
   			    aggregate_geography = ifelse(language == "English", aggregate_geography_en, aggregate_geography_fr),
   			    aggregate_product   = ifelse(language == "English", aggregate_product_en,   aggregate_product_fr),
          indented_geography  = paste0(strrep(intToUtf8(160), indent_geo  * 2), aggregate_geography),
@@ -61,6 +70,70 @@ dfPopularAggDefn <- dfPopularAggDefn |>
   arrange(aggregate_sort_position)
 
 
+# get popular aggregate components
+dfPopularAggComp <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="popular aggregate components")) |>
+	 select(aggregate_id, where_to_code, i_dim2_position)
+
+
+# get CODR weights
+#dfCODRWeightAll <- data.frame(table_18100007_vector = 1234, weight_reference_period = "2026-01-01", weight_r = 23.4, weight_version = "original")
+dfCODRWeightAll <<- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100007-eng.zip", file = 1), show_col_types = FALSE)) |>
+ 	select(table_18100007_vector   = VECTOR,
+         weight_reference_period = REF_DATE,
+         weight_r                = VALUE) |>
+  mutate(table_18100007_vector   = as.integer(substr(table_18100007_vector, 2, nchar(table_18100007_vector))),
+         weight_reference_period = paste0(weight_reference_period, "-01-01"),
+  			    weight_version          = ifelse(weight_reference_period == "2001-01-01", "revised", "original"))
+
+
+# set graph colours and linetypes
+dfSeriesFormats <- data.frame(num       = 1:12,
+															colour    = c("#0000FF", "#000000", "#000099", "#CC0000", "#9900FF", "#990000", "#0066CC", "#990099", "#003366", "#660033", "#006600", "#CC00CC"),
+															linetype  = c("solid",   "dotted",  "dashdot", "solid",  "dotted",    "dotted",  "dotted",  "dashed", "dashed",  "solid",   "dashdot",  "dotted"),
+															symbol    = c("circle",  "diamond", "square",  "circle",  "diamond",  "square", "circle",  "diamond", "square",  "circle",   "diamond", "square"))
+
+
+# create dataframe of messages to help code development
+dfMessages <- data.frame(block = "renderUI", show_message = 0)
+dfMessages <- rbind(dfMessages, 
+										c('renderUI function(i)', 0),
+										c('renderUI function(i)2', 0),
+										c("Initialize popular aggregate", 0), 
+										c("Initialize popular aggregate2", 0), 
+										c('Initialize Prod', 0),
+										c('Initialize Prod2', 0),
+										c('Enable / Disable buttons', 0),
+										c('Enable / Disable buttons2', 0),
+										c('Enable / Disable buttons before', 0),
+										c('Enable / Disable buttons after', 0),
+										c('Apply popular aggregate before', 0),
+										c('Apply popular aggregate after', 0),
+										c('Remove', 0),
+										c('Remove > for > iCompID > scenarios 2, 3, 5', 0),
+										c('Remove > for > iCompID > scenario 4', 0),
+										c('Remove > for > iCompID > scenario 1', 0),
+						    c('Remove > for > local', 0),
+					     c('Remove > for > local > observeEvent', 0),
+					     c('Remove > for > local > observeEvent > iLocal == iCompID > before', 0),
+					     c('Remove > for > local > observeEvent > iLocal == iCompID > to remove', 0),
+					     c('Remove > for > local > observeEvent > if scenario 1', 0),
+					     c('Remove > for > local > observeEvent > if scenario 2', 0),
+				  	   c('Remove > for > local > observeEvent > if scenario 3', 0),
+				  	   c('Remove > for > local > observeEvent > if scenario 4', 0),
+				  	   c('Remove > for > local > observeEvent > if scenario 5', 0),
+				  	   c('Remove > for > local > observeEvent > iLocal == iCompID > after', 0),
+				  	   c('Remove > for > local > observeEvent > iLocal == iCompID > after2', 0),
+				  	   c('Add before', 0),
+				  	   c('Add at start or after restart', 0),
+				  	   c('Add when 2 or more displayed & count disp > count saved', 0),
+				  	   c('Add after go or after removing last component', 0),
+				  	   c('Add iCandidatesCount', 0),
+				  	   c('Add after', 0),
+				  	   c('Run before', 0),
+				  	   c('Run after', 0),
+				  	   c('Restart before', 0),
+				  	   c('Restart after', 0) )
+#dfMessages <- dfMessages |> mutate(show_message = "n")
 
 
 # Set index ref period ranges and get index data
@@ -122,6 +195,8 @@ iDefaultMaxSeriesCount <<- 8
 
 rm(i, y, m, iFirstIndexYear, iFirstIndexPeriod, iLastIndexYear, iLastIndexPeriod)
 
+
+source("Functions.R")
 
 
 
@@ -1008,7 +1083,7 @@ server <- function(input, output, session) {
     	} else { # new components
     		###### CALL MAIN FUNCTION #####
 #    		lQueryResult <- lZQueryResult
-    		lQueryResult <- fIndexWeightChgCont(dfSeriesReg, dfSeriesSpagg, dfCODRIndexAll, dfCODRWeightAll, dfRefPeriods, vSelectedCustAggRows, rvBasePeriod$base_start, rvBasePeriod$base_end)
+    		lQueryResult <- fIndexWeightChgCont(dfBasket, dfSeriesReg, dfSeriesSpagg, dfCODRIndexAll, dfCODRWeightAll, dfRefPeriods, vSelectedCustAggRows, rvBasePeriod$base_start, rvBasePeriod$base_end)
 
     		# update rvLastRun...
     		rvLastRunSel$sel_geo              <- dfSelSeriesSpagg$sel_geo
@@ -1371,7 +1446,7 @@ server <- function(input, output, session) {
 
 
   # call graph functions
-  plotlyGraph <- shiny::reactive({if (!is.null(lQueryResultArranged())) {fPlotTimeSeries(lQueryResultArranged()$dfQueryResultRenamedUnformattedSelectedT, lQueryResultArranged()$dfAllSeries, lQueryResultArranged()$viSeries, lQueryResultArranged()$cSelectedStatVarName) } })
+  plotlyGraph <- shiny::reactive({if (!is.null(lQueryResultArranged())) {fPlotTimeSeries(lQueryResultArranged()$dfQueryResultRenamedUnformattedSelectedT, lQueryResultArranged()$dfAllSeries, lQueryResultArranged()$viSeries, lQueryResultArranged()$cSelectedStatVarName, dfSeriesFormats) } })
 
 
   # render graph objects

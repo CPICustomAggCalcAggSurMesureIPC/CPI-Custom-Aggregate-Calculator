@@ -100,7 +100,7 @@ fGetVarNameFromEnFrText <- function(fvcEnFrText){
 
 
 # function to retrieve data and calculate
-fIndexWeightChgCont <- function(fvdfSeriesReg, fvdfSeriesSpagg, fvdfCODRIndexAll, fvdfCODRWeightAll, fvdfRefPeriods, fvvSpaggRow, fvcStartBasePer, fvcEndBasePer){
+fIndexWeightChgCont <- function(fvdfBasket, fvdfSeriesReg, fvdfSeriesSpagg, fvdfCODRIndexAll, fvdfCODRWeightAll, fvdfRefPeriods, fvvSpaggRow, fvcStartBasePer, fvcEndBasePer){
 	
 	
 # A: get saved metadata (codes, descriptors and vector ids) for relevant series
@@ -229,7 +229,7 @@ dfWeightVector        <- as.data.frame(viWeightVector)
                   first_period                as basket_first_period,
                   last_period                 as basket_last_period
 
-           from   dfBasket) b
+           from   fvdfBasket) b
     on  rp.reference_period >= b.basket_first_period
     and rp.reference_period <= b.basket_last_period
   
@@ -1176,7 +1176,7 @@ dfWeightVector        <- as.data.frame(viWeightVector)
 #---------------------------------
 
 
-fPlotTimeSeries <- function(fvdfData, fvdfSeries, fvviSeries, fvcSelectedStatVarName)	{
+fPlotTimeSeries <- function(fvdfData, fvdfSeries, fvviSeries, fvcSelectedStatVarName, fvdfSeriesFormats)	{
 # 	message(paste0("fPlotTimeSeries: ", fvcSelectedStatVarName))
 
   lFont       <- list(family = "'Noto Sans'", size = 9,  weight = "bold")
@@ -1218,8 +1218,8 @@ fPlotTimeSeries <- function(fvdfData, fvdfSeries, fvviSeries, fvcSelectedStatVar
     	hovertext = paste0(fvdfSeries[iSeries, 3], "\n", dfDataFormatted$reference_period, ": ", dfDataFormatted$value_formatted),
      hoverinfo = paste0("text"),
      name      = fvdfSeries[iSeries, 3], 
-     color     = I(dfSeriesFormats[iFormat, 2]), 
-     linetype  = I(dfSeriesFormats[iFormat, 3]))
+     color     = I(fvdfSeriesFormats[iFormat, 2]), 
+     linetype  = I(fvdfSeriesFormats[iFormat, 3]))
   }
   plTimeSeries <- plTimeSeries |>
    	plotly::layout(
