@@ -1600,9 +1600,9 @@ shinydashboard::dashboardBody(
       body                               {max-width: 1140px; font-size: 140%;}
       hr                                 {margin-left: 3px !important; margin-right: 3px !important; margin-top: 3px !important; margin-bottom: 3px !important; border: 1px solid #dcdee1 !important;}
       span                               {font-size: 90%;}
-      h1                                 {font-family: 'Noto Sans' !important; font-size: 150% !important; margin: 0px 0px !important; text-align: center !important; ; border-bottom: 0px !important}
-      h2                                 {font-family: 'Noto Sans' !important; font-size: 120% !important; margin: 0px 0px !important;}
-      h3                                 {font-family: 'Noto Sans' !important; font-size: 100% !important; margin: 0px 0px !important;}
+      h1                                 {font-family: 'Noto Sans' !important; font-size: 150% !important; margin: 0px 0px !important; text-align: center !important; font-weight: bold !important; border-bottom: 0px !important}
+      h2                                 {font-family: 'Noto Sans' !important; font-size: 120% !important; margin: 0px 0px !important; font-weight: bold !important;}
+      h3                                 {font-family: 'Noto Sans' !important; font-size: 100% !important; margin: 0px 0px !important; font-weight: bold !important;}
  		   .content-wrapper                   {background-color: white;}
       .well                              {margin: 3px 3px !important; padding: 0px 10px !important; background-color: #f5f5f5;}
       .btn                               {min-width: 25px !important; width: auto !important; min-height: 25px !important; height: auto !important; margin: 0px 0px; padding: 1px 1px !important; white-space: normal; border: 1px solid #dcdee1; background-color: #eaebed !important;}
@@ -1764,11 +1764,14 @@ shinydashboard::dashboardBody(
         shiny::fluidRow(shiny::column(12, div(style = "height: 10px;"))),
 
         shiny::fluidRow(
-          shiny::column(4, style = "height: 100px;                    padding-right: 2px;", div(shiny::selectInput("inSelPopularAggGeo",  label = div(HTML(fGetEnFrText("CustAggGroupGeoText")),  style = "font-size: 80%; font-weight: normal;"), width = "100%",
+          shiny::column(4, style = "display: inline-block; vertical-align: bottom !important; height: 100%;                    padding-right: 2px;", 
+            div(shiny::selectInput("inSelPopularAggGeo",  label = div(HTML(fGetEnFrText("CustAggGroupGeoText")),  style = "font-size: 80%; font-weight: normal;"), width = "100%",
             choices = c("", unique(dfPopularAggDefn$indented_geography)), selected = "", multiple = FALSE, selectize = FALSE), style = "margin-bottom: 0px; height: 100px !important;")),
-          shiny::column(6, style = "height: 100px; padding-left: 2px; padding-right: 0px;", div(shiny::selectInput("inSelPopularAggProd", label = div(HTML(fGetEnFrText("CustAggGroupProdText")), style = "font-size: 80%; font-weight: normal;"), width = "100%",
+          shiny::column(6, style = "display: inline-block; vertical-align: bottom !important; height: 100%; padding-left: 2px; padding-right: 0px;", 
+            div(shiny::selectInput("inSelPopularAggProd", label = div(HTML(fGetEnFrText("CustAggGroupProdText")), style = "font-size: 80%; font-weight: normal;"), width = "100%",
             choices = c("", dfPopularAggDefn$indented_product),   selected = "", multiple = FALSE, selectize = FALSE), style = "margin-bottom: 0px;")),
-          shiny::column(2, style = "height: 100px;", id = "buttons", shiny::actionButton("inBtnApplyPopularAgg", label = fGetEnFrText("ApplyPopularAggButtonLabel"), class = "btnAction"))),
+          shiny::column(2, style = "display: inline-block; vertical-align: bottom !important; height: 100%;", id = "buttons", 
+            shiny::actionButton("inBtnApplyPopularAgg", label = fGetEnFrText("ApplyPopularAggButtonLabel"), class = "btnAction"))),
         br(),
 
         # Component series
