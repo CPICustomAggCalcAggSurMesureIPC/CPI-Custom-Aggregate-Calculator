@@ -1,7 +1,7 @@
 
 
 #---------------------------------
-# 0 Load libraries and clear environment
+# 0 Load libraries and set language
 
 # 1 Define Functions
 # 1.0 Define global functions
@@ -25,7 +25,7 @@
 
 
 #---------------------------------
-# 0 Load libraries and clear environment
+# 0 Load libraries and set language
 #---------------------------------
 
 
@@ -33,7 +33,9 @@ library("shiny")
 library("dplyr")
 library("tidyr")
 
-rm(list=ls())
+
+cAppLanguage    <- "English"
+#cAppLanguage    <- "French"
 
 
 
@@ -1395,8 +1397,6 @@ fMessage <- function(fvcBlock, fvcMessage) {
 #---------------------------------
 
 
-cAppLanguage    <<- "English"
-
 # get English and French text
 dfTextEnFr <- as.data.frame(readxl::read_xlsx("data-raw/Data_for_R_Shiny.xlsx", sheet="En & Fr text"))
 
@@ -1519,15 +1519,15 @@ dfMessages <- rbind(dfMessages,
 iFirstIndexYear             <- 2004
 iFirstIndexPeriod           <- 07
 cFirstIndexYearMonth        <- paste0(as.character(iFirstIndexYear), substr(as.character(100 + iFirstIndexPeriod), 2, 3))
-cFirstIndexDisplayPeriod    <<- "2007-04-01"
-cDefaultStartBasePeriod     <<- "2007-04-01"
-cDefaultEndBasePeriod       <<- "2007-04-01"
-cDefaultBasePeriod          <<- "200704=100"
-cFirstWeightRefPeriod       <<- "2001-01-01"
-cFirstWeightEffectivePeriod <<- "2004-07-01"
-cFirstWeightUsablePeriod    <<- "2007-05-01"
-cMaxWeightRefPeriod         <<- max(dfBasket$weight_reference_period)
-iDefaultMaxSeriesCount      <<- 8 # default number of series to plot
+cFirstIndexDisplayPeriod    <- "2007-04-01"
+cDefaultStartBasePeriod     <- "2007-04-01"
+cDefaultEndBasePeriod       <- "2007-04-01"
+cDefaultBasePeriod          <- "200704=100"
+cFirstWeightRefPeriod       <- "2001-01-01"
+cFirstWeightEffectivePeriod <- "2004-07-01"
+cFirstWeightUsablePeriod    <- "2007-05-01"
+cMaxWeightRefPeriod         <- max(dfBasket$weight_reference_period)
+iDefaultMaxSeriesCount      <- 8 # default number of series to plot
 
 
 
@@ -1575,6 +1575,8 @@ fUIStatPanel <- function(fvcStatName, fviStatNum) {
            shiny::fluidRow(shiny::column(12, reactable::reactableOutput(paste0("outReactable", fvcStatName), height = cTableHeight, width =  cTableWidth)))
   )
 }
+
+
 
 
 
@@ -1641,8 +1643,8 @@ shinydashboard::dashboardBody(
    ),
 
 
-		# set focus on a specific element inside the modal when it's shown, and delay to allow modal to fully open
-		shiny::tags$script(HTML("$(document).on('shown.bs.modal', '.modal', function () {
+		  # set focus on a specific element inside the modal when it's shown, and delay to allow modal to fully open
+		  shiny::tags$script(HTML("$(document).on('shown.bs.modal', '.modal', function () {
         setTimeout(function() {
           const focusTarget = document.getElementById('modal-focus-start');
           if (focusTarget) {
@@ -1727,8 +1729,8 @@ shinydashboard::dashboardBody(
     }, 400);
     });
   ")),
-#   		      shiny::column(12, h3(fGetEnFrText("CustAggGroupStepText"), align = "left"))),
 
+ 
   shiny::mainPanel(width = '100%',
     shiny::fluidRow(h1(fGetEnFrText("TitleText"))),
 
@@ -1869,6 +1871,9 @@ shinydashboard::dashboardBody(
 
 
 
+
+
+
 #---------------------------------
 # 4 Server function
 #---------------------------------
@@ -1918,8 +1923,10 @@ server <- function(input, output, session) {
 
 
   # At first launch, ask user to accept Terms of Use before load
-  shiny::showModal(modalDialog(title = HTML(fGetEnFrText("TermsOfUseHeaderText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("TermsOfUseText")),  easyClose = FALSE, footer = tagList(actionButton("modalBtnAcceptTermsForGetData", fGetEnFrText("TermsOfUseButtonAcceptLabel"))) ) ) 
-  
+  shiny::showModal(modalDialog(title = HTML(fGetEnFrText("TermsOfUseHeaderText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("TermsOfUseText")),  easyClose = FALSE, 
+    footer = tagList(actionButton("modalBtnAcceptTermsForGetData", fGetEnFrText("TermsOfUseButtonAcceptLabel")), 
+                     actionButton("modalBtnRefuseTermsForGetData", fGetEnFrText("TermsOfUseButtonRefuseLabel")) ) ) )
+
   
   # Once terms of use accepted, get data
   shiny::observeEvent(input$modalBtnAcceptTermsForGetData, {
@@ -1938,7 +1945,7 @@ server <- function(input, output, session) {
 
     # get CODR weights
 #    dfCODRWeightAll <- data.frame(table_18100007_vector = 1234, weight_reference_period = "2026-01-01", weight_r = 23.4, weight_version = "original")
-    dfCODRWeightAll <<- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100007-eng.zip", file = 1), show_col_types = FALSE)) |>
+    dfCODRWeightAll <- as.data.frame(readr::read_csv(archive::archive_read("https://www150.statcan.gc.ca/n1/tbl/csv/18100007-eng.zip", file = 1), show_col_types = FALSE)) |>
      	select(table_18100007_vector   = VECTOR,
              weight_reference_period = REF_DATE,
              weight_r                = VALUE) |>
@@ -1975,10 +1982,15 @@ server <- function(input, output, session) {
  	    shiny::showModal(modalDialog(title = HTML(fGetEnFrText("UpdateNeededTitleText")),  tags$div(id = "modal-focus-start", tabindex = "-1"), HTML(fGetEnFrText("UpdateNeededText")),  easyClose = FALSE, footer = modalButton(fGetEnFrText("ToolTipMessageButtonCloseLabel"))) )
     }
   })
-  
+ 
+   
+  # Stop the Shiny app
+  observeEvent(input$modalBtnRefuseTermsForGetData, {
+    stopApp()
+  })
   
 
-  
+
 	 # create dynamic output whenever rvCompCount$n changes
 	 output$uiOutPanelComp <- renderUI({
     fMessage("renderUI", paste0("rvCompCount$n: ", rvCompCount$n, ", rvCompLastID$n: ", rvCompLastID$n, ", rvCompDispIDs$n: ", paste(rvCompDispIDs$n, collapse = ", "), ", length(rvSavedSel$sel_geo): ", length(rvSavedSel$sel_geo), ", ", paste0(paste(as.character(rvSavedSel$comp_id), rvSavedSel$sel_geo, rvSavedSel$sel_prod, sep = "/"), collapse = ", ")))
@@ -2879,6 +2891,9 @@ server <- function(input, output, session) {
   output$outReactableDownload1mSameGeoCont  <- shiny::downloadHandler(filename = function() {paste0(fGetEnFrText('Download1mSameGeoCont'),  ".csv")}, content = function(file) {write.csv(lQueryResultArranged()$dfQueryResultRenamedFormattedSelectedT2, file, row.names = FALSE)})
 
 }
+
+
+
 
 shinyApp(ui, server)
 
