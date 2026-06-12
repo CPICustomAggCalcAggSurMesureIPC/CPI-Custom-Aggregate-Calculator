@@ -1764,16 +1764,19 @@ shinydashboard::dashboardBody(
         shiny::fluidRow(shiny::column(12, div(style = "height: 10px;"))),
 
         shiny::fluidRow(
-          shiny::column(4, style = "display: inline-block; vertical-align: bottom !important; height: 100%;                    padding-right: 2px;", 
-            div(shiny::selectInput("inSelPopularAggGeo",  label = div(HTML(fGetEnFrText("CustAggGroupGeoText")),  style = "font-size: 80%; font-weight: normal;"), width = "100%",
-            choices = c("", unique(dfPopularAggDefn$indented_geography)), selected = "", multiple = FALSE, selectize = FALSE), style = "margin-bottom: 0px; height: 100px !important;")),
-          shiny::column(6, style = "display: inline-block; vertical-align: bottom !important; height: 100%; padding-left: 2px; padding-right: 0px;", 
-            div(shiny::selectInput("inSelPopularAggProd", label = div(HTML(fGetEnFrText("CustAggGroupProdText")), style = "font-size: 80%; font-weight: normal;"), width = "100%",
-            choices = c("", dfPopularAggDefn$indented_product),   selected = "", multiple = FALSE, selectize = FALSE), style = "margin-bottom: 0px;")),
-          shiny::column(2, style = "display: inline-block; vertical-align: bottom !important; height: 100%;", id = "buttons", 
-            shiny::actionButton("inBtnApplyPopularAgg", label = fGetEnFrText("ApplyPopularAggButtonLabel"), class = "btnAction"))),
+          shiny::column(4, style = "                    padding-right: 2px;", 
+            div(shiny::selectInput("inSelPopularAggGeo", width = "100%",  
+                  label = div(HTML(fGetEnFrText("CustAggGroupGeoText")),  style = "font-size: 80%; font-weight: normal;"),
+                  choices = c("", unique(dfPopularAggDefn$indented_geography)), selected = "", multiple = FALSE, selectize = FALSE), 
+                  style = "margin-bottom: 0px; height: 100px !important;")),
+          shiny::column(6, style = "padding-left: 2px; padding-right: 0px;", 
+            div(shiny::selectInput("inSelPopularAggProd", width = "100%", 
+                  label = div(HTML(fGetEnFrText("CustAggGroupProdText")), style = "font-size: 80%; font-weight: normal;"),
+                  choices = c("", dfPopularAggDefn$indented_product),   selected = "", multiple = FALSE, selectize = FALSE), 
+                  style = "margin-bottom: 0px; height: 100px !important;")),
+          shiny::column(2, shiny::actionButton("inBtnApplyPopularAgg", label = fGetEnFrText("ApplyPopularAggButtonLabel"), class = "btnAction"))),
         br(),
-
+    	 
         # Component series
         shiny::fluidRow(shiny::column(12,
 		        shiny::fluidRow(
