@@ -29,9 +29,53 @@
 #---------------------------------
 
 
-library("shiny")
-library("dplyr")
-library("tidyr")
+if (!require("pacman")){
+  install.packages("pacman")
+}
+
+# Load packages
+pacman::p_load(
+  dplyr,
+  tidyr,
+  readxl,
+  sqldf,
+  shiny,
+  shinydashboard,
+  shinyjs,
+  reactable,
+  waiter,
+  plotly,
+  httr,
+  jsonlite,
+  purrr,
+  shinyBS,
+  shinyWidgets,
+  lubridate,
+  scales
+)
+
+
+library(dplyr)
+library(tidyr)
+library(readxl)
+library(httr)
+library(jsonlite)
+library(sqldf)
+library(lubridate)
+library(shiny)
+library(shinydashboard)
+library(shinyjs)
+library(shinyBS) # info buttons
+library(reactable)
+library(waiter)
+library(plotly)
+library(scales)
+library(shinyWidgets)
+library(purrr)
+library(DBI)
+library(odbc)
+  
+
 
 
 cAppLanguage    <- "English"
