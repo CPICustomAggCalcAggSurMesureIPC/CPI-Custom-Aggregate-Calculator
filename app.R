@@ -58,22 +58,22 @@ pacman::p_load(
 library(dplyr)
 library(tidyr)
 library(readxl)
-library(httr)
-library(jsonlite)
 library(sqldf)
-library(lubridate)
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
-library(shinyBS) # info buttons
 library(reactable)
 library(waiter)
 library(plotly)
-library(scales)
-library(shinyWidgets)
+library(httr)
+library(jsonlite)
 library(purrr)
-library(DBI)
-library(odbc)
+library(shinyBS) # info buttons
+library(shinyWidgets)
+library(lubridate)
+library(scales)
+
+
   
 
 
